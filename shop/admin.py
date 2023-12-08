@@ -9,7 +9,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['title','arthur' ,'catagory','slug', 'price','featureproduct','rating','image', 'created']
+    list_display = ['title','arthur' ,'catagory','featureproduct', 'price','rating','image', 'created']
     # autocomplete_fields = ['catagory']
     list_filter = ['available', 'created', 'updated']
     list_editable = ['price','featureproduct']
