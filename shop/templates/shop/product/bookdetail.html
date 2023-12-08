@@ -1,0 +1,146 @@
+{% extends "shop/base/base.html" %}
+{% load static %}
+{% block title %}
+{{ product.name }}
+{% endblock %}
+{% block content %}
+<style>
+    .bookdetail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+    }
+
+    /* .bookdetail::before {
+        content: " ";
+    } */
+
+    .bookdetail-content {
+        border: 2px solid #feb651;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 6px 5px 28px -4px rgba(0, 0, 0, 0.75);
+        -webkit-box-shadow: 6px 5px 28px -4px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 6px 5px 28px -4px rgba(0, 0, 0, 0.75);
+        transition: flex .5s ease;
+    }
+
+    .bookdetail-image-container {
+        width: 400px;
+        height: 590px;
+        margin-right: 1.5rem;
+    }
+
+    .bookdetail-image {
+        height: 100%;
+        width: 100%;
+        object-fit: fill;
+        transition: .3s;
+        border-radius: 15px;
+        box-shadow: 6px 5px 28px -4px rgba(0, 0, 0, 0.75);
+        -webkit-box-shadow: 6px 5px 28px -4px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 6px 5px 28px -4px rgba(0, 0, 0, 0.75);
+    }
+
+    .bookdetail-image:hover {
+        transform: scale(1.02);
+    }
+
+    .bookdetail-text {
+        height: 100%;
+        /* padding: 5rem 0 4rem; */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .bookdetail-title {
+        font-size: 2rem;
+    }
+
+    .bookdetail-arthur {
+        color: var(--color-accent-option);
+    }
+
+    .bookdetail-description p {
+        width: 60ch;
+        line-height: 1.5rem;
+        font-weight: 400;
+        font-size: 1.3rem;
+    }
+
+    .bookdetail-price {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+    }
+
+    .bookdetail-price-main {
+        font-weight: lighter;
+        font-size: 3rem;
+        line-height: 0;
+    }
+
+    .bookdetail-price-blur {
+        font-size: 1rem;
+        font-weight: lighter;
+        padding-left: 1rem;
+        color: var(--color-accent-option);
+    }
+
+    .bookdetail-rating {
+        color: var(--color-accent-option);
+    }
+
+    .bookdetail-footer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding-top: 3rem;
+    }
+</style>
+<div class="bookdetail">
+    <div class="bookdetail-container">
+        <h2 class="bookdetail-heading">{{ product.name }}</h2>
+        <div class="bookdetail-content">
+            <div class="bookdetail-image-container">
+                <a href="{{ product.get_absolute_url }}">
+                    <img class="bookdetail-image" src="{{ product.image.url }}" alt="books">
+                </a>
+            </div>
+            <div class="bookdetail-text">
+                <div class="bookdetail-title">
+                    <h2>
+                        <a href="{{ product.get_absolute_url }}">
+                            {{ product.title }}
+                        </a>
+                    </h2>
+                </div>
+                <div class="bookdetail-arthur">
+                    <p>{{ product.arthur }}</p>
+                </div>
+                <div class="bookdetail-description">
+                    <p> {{ product.description}}</p>
+                </div>
+                <div class="bookdetail-price">
+                    <h1 class="bookdetail-price-main">${{ product.price }}</h1>
+                    <h1 class="bookdetail-price-blur">$86.51</h1>
+                </div>
+                <div class="bookdetail-rating">
+                    <p>Rating {{ product.rating }}/5</p>
+                </div>
+                <div class="bookdetail-footer">
+                    <p>Already Sold: 15pcs</p>
+                    <p>Reamining: 5pcs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
