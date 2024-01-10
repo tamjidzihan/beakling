@@ -1,0 +1,156 @@
+{% load static %}
+{% load cart_product %}
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-xxl">
+        <a class="navbar-brand " href="/">
+            <img class="img-fluid" src="{% static 'image/Asset-6PNG.png'%}" alt=""
+                style="max-width: 190px; max-height: auto;">
+        </a>
+        <button class="navbar-toggler bg-danger" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end align-items-center text-center" id="navbarNav">
+            <div class="py-2 px-4 ms-auto bg-danger rounded-pill">
+                <a class="px-4 text-light" href="/">Home</a>
+                <span class="dropdown px-4">
+                    <button class="btn btn-danger rounded-pill dropdown-toggle py-0" id="user-login"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Shop
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-danger my-3" aria-labelledby="">
+                        <li><a class="dropdown-item rounded-pill" href="/books/">Books</a></li>
+                        <li><a class="dropdown-item rounded-pill" href="{% url 'shop:products' %}">Store</a></li>
+                    </ul>
+                </span>
+                <a class="px-4 text-light" href="#">Music</a>
+                <a class="px-4 text-light" href="{% url 'shop:about' %}">About</a>
+                <span class="dropdown px-4">
+                    <button class="btn btn-danger rounded-pill dropdown-toggle py-0" id="user-login"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if request.user.is_authenticated %}
+                        <span>
+                            {{ request.user.username}}
+                        </span>
+                        {% else %}
+                        <span>Log In</span>
+                        {% endif %}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark bg-danger my-3" aria-labelledby="dropdownMenuButton2">
+                        {% if request.user.is_authenticated %}
+                        <li><a class="dropdown-item rounded-pill" href="{% url 'appuser:user-info'%}">
+                                Account Information
+                            </a></li>
+                        {% else %}
+                        <li><a class="dropdown-item rounded-pill" href="{% url 'appuser:log-in'%}">Log In/Sign Up</a>
+                        </li>
+                        {% endif %}
+                        <li><a class="dropdown-item rounded-pill" href="#">Another action</a></li>
+                        <li><a class="dropdown-item rounded-pill" href="{% url 'shop:terms-and-conditions' %}">Terms and
+                                Conditions</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        {% if request.user.is_authenticated %}
+                        <li>
+                            <a class="dropdown-item" href="/appuser/log-out">Log Out</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </span>
+            </div>
+            <!-- <form class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-danger rounded-circle" type="submit"><i class="bi bi-search"></i></button>
+            </form> -->
+
+
+            <div class="search-icon">
+                <button id="searchButton" class="btn btn-danger rounded-circle" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#searchCollapse" aria-expanded="false" aria-controls="searchCollapse">
+                    <i class="bi bi-search"></i>
+                </button>
+                <div class="collapse" id="searchCollapse">
+                    <form class="d-flex">
+                        <input class="form-control me-2" type="search" placeholder="Type to Search..."
+                            aria-label="Search">
+                        <button class="btn btn-danger rounded-circle" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+
+
+            <button class="btn btn-danger rounded-circle mx-2 position-relative" type="button"
+                data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                <i class="bi bi-cart-fill"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
+                    {% if request.user.is_authenticated %}
+                    {{ request.user|cart_count }}
+                    {% else %}
+                    0
+                    {% endif %}
+                    <span class="visually-hidden">items in cart</span>
+                </span>
+            </button>
+
+            <div class="offcanvas offcanvas-end btn-danger" tabindex="-1" id="offcanvasRight"
+                aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                    <h5 id="offcanvasRightLabel">Cart Item</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body" style="background: #9552FD;">
+                    <section>
+
+                        <div class="d-flex justify-content-between align-items-center flex-row border-bottom mb-4 py-0">
+                            <p class="text-start col-6 text-white">Product</p>
+                            <p class="col-2 text-white">Quantity</p>
+                            <p class=" col-2 text-white">Price</p>
+                        </div>
+
+                    </section>
+                    <section>
+                        {% if request.user.is_authenticated %}
+                        {% for cart in request.user|cart_view %}
+                        <div class="d-flex justify-content-between align-items-center flex-row my-4 pb-2">
+                            <a href="{{ cart.item.get_absolute_url }}" class="mb-2 col-3">
+                                <img src="{{ cart.item.image.url }}" alt="{{ cart.item.title }}" class="img-fluid ">
+                            </a>
+                            <a href="{{ cart.item.get_absolute_url }}" class="col-4">
+                                <p class="text-start  text-white">{{ cart.item.title }}</p>
+                            </a>
+                            <p class="col-1 text-white">X</p>
+                            <p class="col-1 text-white">{{ cart.quantity }}</p>
+
+                            <p class=" col-2 text-white">${{ cart.get_total_price }}</p>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </section>
+                    {% if request.user.is_authenticated %}
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center flex-row  border-top p-3">
+                            <p class="text-white  lead">Total Price: </p>
+                            <p class="text-white lead">$ {{ request.user|cart_price }}</p>
+                        </div>
+                        <div class="text-center">
+                            <a href="{% url 'order:cart-view' %}" class="btn btn-danger w-100">View Cart</a>
+                        </div>
+                        {% else %}
+                        <span class="text-white  lead me-5">Total Price: </span>
+                        <span class="text-white lead ms-5">$0</span>
+
+                    </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</nav>

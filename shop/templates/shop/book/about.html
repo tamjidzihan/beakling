@@ -1,0 +1,59 @@
+{% extends "shop/base/base.html" %}
+{% load static %}
+{% block title %}
+About
+{% endblock %}
+{% block content %}
+<div class="container mt-4 my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h1 class="display-4">Welcome to Beakling.com!</h1>
+            <p class="lead">Your Ultimate Destination for Enriching Childhoods</p>
+
+            <p>At Beakling.com, we take pride in offering a unique and delightful shopping experience for parents,
+                caregivers, and anyone looking to bring joy and education into a child's world. Our carefully curated
+                selection of eBooks, kids' toys, and other child-friendly products is designed to foster creativity,
+                learning, and pure fun.</p>
+
+            <!-- Add more content here as needed -->
+
+            <h2 class="mt-4">Our Mission</h2>
+            <p>At the heart of Beakling.com is our unwavering commitment to enhancing the lives of children through
+                quality products that inspire imagination and support their developmental journey...</p>
+
+            <!-- Add more sections as needed -->
+
+            <h2 class="mt-4">What Sets Us Apart</h2>
+            <ul>
+                <li><strong>Exceptional eBooks:</strong> Dive into a world of captivating stories, educational content,
+                    and interactive eBooks that stimulate young minds and cultivate a love for reading.</li>
+                <li><strong>Innovative Toys:</strong> Discover a carefully curated collection of toys that entertain,
+                    educate, and encourage imaginative play. From classic favorites to the latest innovations, we offer
+                    a wide range of options to suit every age and interest.</li>
+                <li><strong>Quality Kid Products:</strong> Our commitment to quality extends beyond books and toys.
+                    Explore a variety of other kid products, handpicked for their safety, durability, and educational
+                    value.</li>
+                <li><strong>User-Friendly Experience:</strong> Navigating Beakling.com is a breeze. Our user-friendly
+                    website ensures a seamless shopping experience, allowing you to find the perfect items for the
+                    little ones in your life with ease.</li>
+            </ul>
+
+            <h2 class="mt-4">Why Choose Beakling.com</h2>
+            <ul>
+                <li><strong>Diverse Selection:</strong> We boast a diverse and extensive range of products, ensuring
+                    there's something for every child, no matter their age or interests.</li>
+                <li><strong>Quality Assurance:</strong> Rest easy knowing that every product on Beakling.com undergoes a
+                    thorough quality check. We prioritize safety, durability, and educational value.</li>
+                <li><strong>Expert Guidance:</strong> Unsure about what to choose? Our team is here to help! Feel free
+                    to reach out for personalized recommendations and expert advice.</li>
+            </ul>
+        </div>
+
+    </div>
+    <div class="col-lg-4">
+        <a href="{% url 'shop:terms-and-conditions' %}" class="btn btn-danger btn-sm">Terms and Conditions</a>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "shop/base/base.html" %}
+{% load static %}
+{% block title %}
+Toys and Accessories
+{% endblock %}
+{% block content %}
+
+<style>
+    .card-img-top {
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        max-height: 350px;
+    }
+</style>
+
+
+<section id="toys" class="mt-5" style="background: #9552FD;">
+    <div class="container-lg">
+        <div class="text-center">
+            <h2>Toys</h2>
+            <p>Choose a pricing plan that suits you.</p>
+        </div>
+        <div class="row mb-5 align-items-center justify-content-center">
+            {% for toy in toys %}
+            <div class="col-11 col-md-6  col-xl-3 my-5 text-dark">
+                <div class="card h-100" style="background-color: #ECC851;">
+                    <a href="{{ toy.get_absolute_url }}">
+                        <img class="card-img-top img-fluid img-thumbnail" src="{{ toy.image.url }}" alt="product image">
+                    </a>
+                    <div class="card-body">
+                        <a href="{{ toy.get_absolute_url }}">
+                            <h5 class="card-title text-decoration-none text-dark">{{ toy.title }}</h5>
+                        </a>
+                        <p class="card-text small">{{ toy.description }}</p>
+                        <span class="card-text">${{ toy.price }}</span>
+                        <div class="row justify-content-center my-3 mx-3">
+                            <a href="{{ toy.get_absolute_url }}" class="btn btn-danger">Buy
+                                Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+
+
+<section id="toys" class="mt-5" style="background: #9552FD;">
+    <div class="container-lg">
+        <div class="text-center">
+            <h2>Accessories</h2>
+            <p>Choose a pricing plan that suits you.</p>
+        </div>
+        <div class="row mb-5 align-items-center justify-content-center">
+            {% for accessory in accessories %}
+            <div class="col-11 col-md-6  col-xl-3 my-5 text-dark">
+                <div class="card h-100" style="background-color: #ECC851;">
+                    <a href="{{ accessory.get_absolute_url }}">
+                        <img class="card-img-top img-fluid img-thumbnail" src="{{ accessory.image.url }}"
+                            alt="product image">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ accessory.title }}</h5>
+                        <p class="card-text small">{{ accessory.description }}</p>
+                        <p class="card-text my-3">${{ accessory.price }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+<!-- <div class="card-group">
+    {% for product in products %}
+    <div class="card" style="background-color: blueviolet;">
+        <a href="{{ product.get_absolute_url }}">
+            <img class="card-img-top img-fluid" src="{{ product.image.url }}" alt="product image">
+        </a>
+        <div class="card-body">
+            <h5 class="card-title display-6">{{ product.title }}</h5>
+            <p class="card-text">{{ product.description }}</p>
+            <p class="card-text">${{ product.price }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div> -->
+
+<!-- <div class="card-group">
+    <div class="card">
+        <img class="card-img-top" src="..." alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional
+                content. This content is a little bit longer.</p>
+            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+        </div>
+    </div>
+</div> -->
+
+{% endblock %}

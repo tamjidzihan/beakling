@@ -1,0 +1,257 @@
+{% extends "shop/base/base.html" %}
+{% load static %}
+{% block title %}
+Books
+{% endblock %}
+{% block content %}
+
+
+<style>
+    body {
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        background: var(--color-secondary);
+        color: var(--color-accent-primary);
+        box-sizing: border-box;
+    }
+
+    h1,
+    h2,
+    h3 {
+        color: var(--color-accent-primary);
+    }
+
+    a {
+        text-decoration: none;
+        color: var(--color-accent-primary);
+    }
+
+    .footer-container {
+        background: var(--color-primary);
+        color: var(--color-accent-option);
+    }
+
+    .footer-container h3 {
+        color: var(--color-accent-option);
+    }
+</style>
+
+
+<header>
+    <div class="booklist-hero">
+        <div class="hero-container">
+            <div class="hero-main">
+                <div class="hero-main-text">
+                    <p class="text-white">Kiddie Book Haven</p>
+                    <h2>Where imagination</h2>
+                    <h2>and Wonder come</h2>
+                    <h2>to life!</h2>
+                    <a class="text-decoration-none text-white" href="#">Explore it</a>
+                </div>
+                <div class="hero-main-image">
+                    <img src="{% static 'image/stack_of_book.png' %}" alt="stack of books">
+                </div>
+            </div>
+            <div class="hero-sub">
+                <div class="hero-sub-text">
+                    <h1>30%</h1>
+                    <h2>off now</h2>
+                    <p class="text-white">Best Books and</p>
+                    <p class="text-white">Selecttive ones</p>
+                    <p class="text-white">at best rates!</p>
+                    <a class="text-decoration-none text-white" href="#">Explore it</a>
+                </div>
+                <div class="hero-sub-image">
+                    <img src="{% static 'image/eco_bulb.png' %}" alt="stack of books">
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<main>
+    <div class="booklist-wrapper mt-5">
+        <div class="perv-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" height="26" width="20" viewBox="0 0 320 512">
+                <path opacity="1" fill="#9552FD"
+                    d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+            </svg>
+        </div>
+
+        <div class="booklist-container">
+            {% for book in books %}
+            <div class="booklist">
+                <div class="booklist-image">
+                    <div class="booklist-image-container">
+                        <a class="text-decoration-none text-white" href="{{ book.get_absolute_url }}">
+                            <img src="{{ book.image.url }}" alt="book image">
+                        </a>
+                    </div>
+                </div>
+                <div class="booklist-details">
+                    <div class="booklist-text">
+                        <div class="booklist-detail-item1">
+                            <div class="booklist-title">
+                                <a class="text-decoration-none text-white" href="{{ book.get_absolute_url }}">
+                                    <h2>{{ book.title }}</h2>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="booklist-detail-item2">
+                            <div class="booklist-arthur">
+                                <p>{{ book.arthur }}</p>
+                            </div>
+                            <div class="booklist-description">
+                                <p>{{ book.description }}</p>
+                            </div>
+                            <div class="booklist-price">
+                                <h1 class="booklist-price-main">${{ book.price }}</h1>
+                                <h1 class="booklist-price-blur text-decoration-line-through">${{ book.increased_price }}
+                                </h1>
+                            </div>
+                        </div>
+                        <div class="booklist-rating">
+                            <p>Rating {{ book.rating }}/5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="next-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" height="26" width="20" viewBox="0 0 320 512">
+                <path opacity="1" fill="#9552FD"
+                    d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z" />
+            </svg>
+        </div>
+    </div>
+
+    <div class="navigation-dots mb-5">
+    </div>
+
+
+    <div class="container my-5 py-5 " style="background: #9552FD; border-radius: 15px;">
+        <div class="row">
+            <div class="col-lg-5 justify-content-center align-items-center px-5">
+                <div>
+                    <div>
+                        <h1>Flash Sale</h1>
+                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolorem aspernatur atque aperiam
+                            harum,
+                            rem perspiciatis iste deleniti ea. Et architecto ut dolore commodi reprehenderit quis
+                            eligendi
+                            quaerat at non ratione!</p>
+                    </div>
+                    {% for event in countdown_data %}
+                    <div>
+                        <h2 class="py-3">Hurry up, {{ event.event_name }} ends in:</h2>
+                        <div class=" d-flex justify-content-around align-items-center">
+                            <div>
+                                <div>
+                                    <p class="bg-danger text-center rounded-pill px-3">
+                                        {{event.days|default:"00" }}
+                                    </p>
+                                </div>
+                                <p>DAYS</p>
+                            </div>
+                            <div>
+                                <div>
+                                    <p class="bg-danger text-center rounded-pill px-3">
+                                        {{ event.hours|default:"00" }}
+                                    </p>
+                                </div>
+                                <p class="">HOURS</p>
+                            </div>
+                            <div>
+                                <div>
+                                    <p class="bg-danger text-center rounded-pill px-3">
+                                        {{event.minutes|default:"00" }}
+                                    </p>
+                                </div>
+                                <p>MINUTES</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="d-flex justify-content-between py-4 text-center">
+                        <p>Already Sold: 15pcs</p>
+                        <p>Remaining: 5pcs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 justify-content-center align-items-center">
+                {% if featured_book %}
+                <div class="row justify-content-center align-items-center ">
+                    <div class="col-lg-5 col-md-5 col-sm-4 ">
+                        <div class="text-end">
+                            <div class="">
+                                <div>
+                                    <a class="text-decoration-none text-white"
+                                        href="{{ featured_book.get_absolute_url }}">
+                                        <h2>{{ featured_book.title }}</h2>
+                                    </a>
+                                </div>
+                            </div>
+                            <div>
+                                <div>
+                                    <p>{{ featured_book.arthur }}</p>
+                                </div>
+                                <div class=" d-flex align-items-center justify-content-end">
+                                    <h1 class="fs-4 text-decoration-line-through pe-4">
+                                        ${{ featured_book.increased_price }}
+                                    </h1>
+                                    <h1>${{ featured_book.price }}
+
+                                    </h1>
+                                </div>
+                            </div>
+                            <div class=" pt-4 text-accent">
+                                <p>Rating {{ featured_book.rating }}/5</p>
+                            </div>
+                            <a href="{{ featured_book.get_absolute_url }}" class="btn btn-danger btn-lg mt-5">Buy
+                                Now</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-5 col-sm-4">
+                        <a class="text-decoration-none text-white" href="{{ featured_book.get_absolute_url }}">
+                            <img src="{{ featured_book.image.url }}" alt="flashsale book image" class="img-fluid"
+                                style="border-radius: 15px;">
+                        </a>
+
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <section>
+        <div class="row justify-content-center align-items-center py-5 my-5">
+            <div class="col-lg-5">
+                <h1 class="display-4 text-danger">Perfect for young readers</h1>
+                <p class="lead fs-4 py-2">Who are just starting to explore the wonderful world of literature. </p>
+                <p class="lead fs-4 py-2">Our collection features a wide range
+                    of exciting stories, from magical adventures to heartwarming tales of friendship and bravery.
+                    Each
+                    book
+                    is carefully crafted to engage young readers and encourage a love for reading.</p>
+                <p class="lead fs-4 py-2"> Our Children's Books are
+                    suitable for a variety of ages and reading levels, making them perfect for both beginning
+                    readers
+                    and
+                    more advanced ones. Each book is filled with vibrant illustrations and fun activities that will
+                    keep
+                    children entertained for hours on end.
+                </p>
+                <a class="text-danger text-decoration-underline" href="#">To learn more about our Children's Books and
+                    to start your child's
+                    reading adventure, click on the link.</a>
+            </div>
+            <div class="col-lg-2">
+                <img class="img-fluid" src="{% static 'image/blob@2x.png'%}" alt="">
+            </div>
+        </div>
+    </section>
+
+
+</main>
+
+{% endblock %}

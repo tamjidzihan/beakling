@@ -1,0 +1,203 @@
+{% extends "shop/base/base.html" %}
+{% load static %}
+{% block content %}
+<section>
+    <div class="container-lg my-5 ">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-lg-4 col-md-4  text-md-start ">
+                <h1>
+                    <div class="display-1 mb-0 pb-0">Beakling </div>
+                    <div class="display-4 mb-0 pb-0">Wonders</div>
+                </h1>
+                <p>Welcome to Beakling Wonders:</p>
+                <p>This months book recommendations from</p>
+                <p>XYZ, publishing Directoe at Usborne</p>
+                <a class="btn btn-danger px-4 btn-lg rounded-pill mt-4 " href="/books/">View Books -></a>
+            </div>
+            <div class="col-lg-6 col-md-4 col-sm-6 text-center my-4">
+                <img class="img-fluid" src="{% static 'image/family-hero.png'%}" alt="family Cover">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="books">
+    <div class="container-lg my-5">
+        <div class="row justify-content-center align-items-start ">
+            <div class="col-lg-8 text-center  text-md-start border-5">
+                <span class="display-6 mx-4 border-bottom border-4 border-warning">Deal of the week</span>
+                <div class="row align-items-center my-5">
+                    <div class="col-lg-6 col-md-4 col-sm-4  my-lg-5 me-3 text-center text-md-start">
+                        <a href="{{ featured_book.get_absolute_url }}"><img class="img-fluid rounded-3"
+                                src="{{ featured_book.image.url }}" alt="Ebook Cover"></a>
+                    </div>
+                    <div class="col-lg-5 col-md-6  col-sm-6 text-center text-md-start">
+                        <h1>
+                            <a href="{{ featured_book.get_absolute_url }}">
+                                <div class="display-5 lead"> {{ featured_book.title }}</div>
+                            </a>
+                            <div class="my-3 small">{{ featured_book.arthur }}</div>
+                        </h1>
+                        <div class="my-4">
+                            <span class="me-3 display-6">${{ featured_book.price }}
+                            </span>
+                            <span class="text-decoration-line-through">${{ featured_book.increased_price }}</span>
+                        </div>
+                        <div class="mb-4">
+                            {{ featured_book.rating }}.00/5.00
+                            <div class="text-start py-2 ">
+                                <span class="text-start">Review :</span>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                                <i class="bi bi-star"></i>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            {% for event in countdown_data %}
+                            <p class="lead text-warning">Hurry up, {{ event.event_name }} ends in:</p>
+                            <div class="row my-4 text-end">
+                                <div class="col-3 mx-2">
+                                    <p class="bg-danger text-center rounded-pill">
+                                        {{ event.days|default:"00" }}</p>
+                                    <p class="text-center">DAYS</p>
+                                </div>
+                                <div class="col-3 mx-2">
+                                    <p class="bg-danger text-center rounded-pill">
+                                        {{ event.hours|default:"00" }}
+                                    </p>
+                                    <p class="text-center">HOURS</p>
+                                </div>
+                                <div class="col-3 mx-2">
+                                    <p class="bg-danger text-center rounded-pill">
+                                        {{event.minutes|default:"00" }}
+                                    </p>
+                                    <p class="text-center">MINUTES</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="row my-4">
+                            <p class="col-6">Already Sold: 15pcs</p>
+                            <p class="col-6">Reamining: 5pcs</p>
+                        </div>
+                        <a href="{{ featured_book.get_absolute_url }}" class="btn btn-danger btn-lg">Buy
+                            Now</a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-lg-4 text-center  text-md-start">
+                <span class="display-6 my-4 border-bottom border-4 ">Top Rating </span>
+                <span><i class="bi bi-stars fs-1"></i></span>
+                {% for recently_updated_book in recently_updated_books %}
+                <div>
+                    <div class="row my-3 align-items-center">
+                        <div class="col-md-6 text-md-start text-center my-4">
+                            <a href="{{ recently_updated_book.get_absolute_url }}">
+                                <img class="img-fluid" src="{{ recently_updated_book.image.url }}"
+                                    alt="recently_updated_book">
+                            </a>
+                        </div>
+                        <div class="col-md-6 text-md-start text-center ">
+                            <p>
+                                <a href="{{ recently_updated_book.get_absolute_url }}">
+                                    <h2 class="lead fs-3"> {{ recently_updated_book.title }}</h2>
+                                </a>
+                            <div class="small">{{ recently_updated_book.arthur }}</div>
+                            </p>
+                            <div class="my-3">
+                                <span class="me-3 lead">${{ recently_updated_book.price }}
+                                </span>
+                                <span class="small text-decoration-line-through">
+                                    ${{recently_updated_book.increased_price}}
+                                </span>
+                            </div>
+                            <p class="mt-2 small">Rating {{ recently_updated_book.rating }}/5</p>
+                            <div class="text-start mb-3 ">
+                                <span class="text-start">Reviews :</span>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                                <i class="bi bi-star"></i>
+                            </div>
+                            <a href="{{ recently_updated_book.get_absolute_url }}" class="btn btn-danger  btn-sm">Buy
+                                Now</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<section class="view">
+    <div class="view-container">
+        <a href="#" class="music view-item text-decoration-none">
+            <div class="music-view-content text-white">
+                <h1>Musics</h1>
+                <p>Lorem ipsum dolor sit amet consectetur..</p>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+            </div>
+        </a>
+        <a href="/books/" class="book view-item">
+            <div class="book-view-content">
+                <h1>Books</h1>
+                <p>Lorem ipsum dolor sit amet.</p>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing.</p>
+            </div>
+        </a>
+    </div>
+</section>
+<section class="my-5">
+    <div class="container-lg">
+        <div class="text-center">
+            <h2>Book Reviews<span><i class="bi bi-award"></i></span></h2>
+
+            <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe!</p>
+        </div>
+        <div class="row justify-content-center my-5">
+            {% for recently_updated_book in recently_updated_books %}
+            <div class="col-lg-8">
+                <div class="list-group">
+                    <div class="list-group-item py-3">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-2">
+                                <a href="{{ recently_updated_book.get_absolute_url }}">
+                                    <img class="img-fluid" src="{{ recently_updated_book.image.url }}"
+                                        alt="recently_updated_book">
+                                </a>
+                            </div>
+                            <dev class="d-flex text-start flex-column justify-content-between px-2 col-lg-10 col-md-10">
+                                <div class="text-start py-2 ">
+                                    <span class="text-start">Review :</span>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                    <i class="bi bi-star"></i>
+                                </div>
+                                <h5 class="mb-2">Lorem ipsum dolor sit amet consectetur.</h5>
+                                <p class="mb-1">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aut
+                                    omnis
+                                    quod
+                                    in
+                                    saepe dignissimos sed.</p>
+                                <small>Lorem ipsum dolor sit amet.</small>
+                            </dev>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+{% endblock %}

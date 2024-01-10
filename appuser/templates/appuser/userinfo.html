@@ -1,0 +1,55 @@
+{% extends "shop/base/base.html" %}
+{% load static %}
+{% block title %}
+user-info
+{% endblock %}
+{% block content %}
+<div class="container mt-5 text-dark">
+    <h1>User Information</h1>
+
+    <div class="card bg-warning">
+        <div class="card-header">
+            User Information
+        </div>
+        <div class="card-body ">
+            <p class="card-text"><strong>Username:</strong> {{ user.username }}</p>
+            <p class="card-text"><strong>First Name:</strong> {{ user.first_name }}</p>
+            <p class="card-text"><strong>Last Name:</strong> {{ user.last_name }}</p>
+            <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
+        </div>
+    </div>
+
+    {% if customer %}
+    <div class="card mt-3 bg-warning">
+        <div class="card-header">
+            Billing address
+        </div>
+        <div class="card-body ">
+            <p class="card-text"><strong>Full Name:</strong> {{ customer.full_name }}</p>
+            <p class="card-text"><strong>Address:</strong> {{ customer.address }}</p>
+            <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
+            <p class="card-text"><strong>City:</strong> {{ customer.city }}</p>
+            <p class="card-text"><strong>Zipcode:</strong> {{ customer.zipcode }}</p>
+            <p class="card-text"><strong>Country:</strong> {{ customer.country }}</p>
+            <p class="card-text"><strong>Phone:</strong> {{ customer.phone }}</p>
+            <p class="card-text"><strong>Date of Birth:</strong> {{ customer.date_of_birth }}</p>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <div class="btn-group " role="group" aria-label="Basic example">
+        <div class="text-center m-2">
+            <a class="btn btn-primary btn-lg" href="update-user-info">Update Info</a>
+        </div>
+        <div class="text-center m-2">
+            <a class="btn btn-danger btn-lg" href="log-out">Log Out</a>
+        </div>
+        <div class="text-center m-2">
+            <a class="btn btn-success btn-lg" href="/">Home</a>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

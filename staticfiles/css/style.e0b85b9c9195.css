@@ -1,0 +1,281 @@
+:root{
+    --color-primary:#9552FD;
+    --color-secondary:  #ECC851;
+    --color-option: #DF1F70;
+    --color-accent-primary: #ffffff;
+    --color-accent-secondary:#676767;
+    --color-accent-option:#dbcdf0;
+}
+
+body{
+    font-family: Inter,Arial, Helvetica, sans-serif;
+    background: var(--color-primary);
+    color: var(--color-accent-primary);
+    box-sizing: border-box;
+}
+
+h1,h2,h3{
+    color: var(--color-accent-primary);
+}
+
+a{
+    text-decoration: none;
+    color: var(--color-accent-primary);
+}
+
+ul,li{
+    list-style: none;
+    padding:0;
+}
+
+.site-wrap:before {
+    -webkit-transition: .3s all ease-in-out;
+    -o-transition: .3s all ease-in-out;
+    transition: .3s all ease-in-out;
+    background: rgba(0, 0, 0, 0.6);
+    content: "";
+    position: absolute;
+    z-index: 2000;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    visibility: hidden; }
+
+/*  Navigation section */
+.container-navber{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    padding: 1.5rem 6rem;
+}
+
+.logo-container{
+    width: 190px;
+    height: auto;
+}
+.logo-container img{
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+
+.nav-bar{
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: var(--color-option);
+    border-radius: 25px;
+    overflow: hidden;
+    position: relative;
+}
+ .item{
+    padding: .7rem 4rem;
+    font-size: 1.2rem;
+    transition:all 0.3s ease-in-out 0.2s;
+ }
+
+ .item:hover{
+    transform: scale(1.4);
+ }
+
+/* *************************************************** */
+
+
+
+/* View Sections */
+.view{
+    padding: 0 10rem;
+}
+.view-container{
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 7rem;
+}
+
+.view-item{
+    flex: 1;
+    height: 25rem;
+    box-shadow: 6px 5px 28px -4px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 6px 5px 28px -4px rgba(0,0,0,0.75);
+    -moz-box-shadow: 6px 5px 28px -4px rgba(0,0,0,0.75);
+    transition: flex .5s ease;
+}
+
+.view-item:hover{
+    flex: 20;
+}
+
+.music{
+    background: var(--color-option);
+    position: relative;
+    overflow: hidden;
+}
+
+.music-view-content{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding-left: 1rem;
+    text-wrap: nowrap;
+}
+
+.music-view-content h1{
+    
+    font-weight: lighter;
+    font-size: 7rem;
+    flex-wrap: nowrap;
+}
+
+
+.book{
+    background: var(--color-secondary);
+    position: relative;
+    color: var(--color-accent-secondary);
+    overflow: hidden;
+}
+
+.book-view-content{
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-right: 1rem;
+    color: #4A4A4A;
+    text-wrap: nowrap;
+}
+
+.book-view-content h1{
+    font-weight: lighter;
+    font-size: 7rem;
+    color: var(--color-accent-secondary);
+}
+
+
+
+@media (max-width: 1024px) {
+    .view{
+        padding: 0 ;
+    }
+}
+
+@media (max-width: 890px) {
+    
+    .view-item {
+        flex: 1 0 100%; /* Display items in a column */
+        height: 12rem;
+    }
+
+    .music,
+    .book {
+        flex: 1 0 100%; /* Full width for music and book items */
+    }
+
+    .view-item:hover{
+        flex: 1;
+    }
+
+    .music-view-content,
+    .book-view-content
+    {
+        position: absolute;
+        text-wrap: wrap;
+    }
+    
+    .music-view-content h1,
+    .book-view-content h1{
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 890px){
+   
+     
+    .music-view-content h1,
+    .book-view-content h1{
+        font-size: 2rem;
+    }
+    .music-view-content p,
+    .book-view-content p{
+        font-size: 1rem;
+        line-height: normal;
+    }
+
+}
+
+
+
+
+
+
+
+/* Add these styles for the burger icon */
+.burger-icon {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.bar {
+    width: 30px;
+    height: 3px;
+    background-color: #fff;
+    margin: 6px 0;
+    transition: 0.4s;
+}
+
+/* Adjust existing styles */
+.container-navber {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5rem 6rem;
+}
+
+.nav-bar {
+    display: flex;
+    height: auto;
+    align-items: center;
+    background: var(--color-option);
+    border-radius: 25px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Add media query for smaller screens */
+@media (max-width: 768px) {
+    .burger-icon {
+        display: flex;
+    }
+
+    .nav-bar {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: var(--color-option);
+        border-radius: 0;
+        z-index: 1;
+    }
+
+    .nav-bar.show {
+        display: flex;
+    }
+
+    .item {
+        width: 100%;
+        text-align: end;
+        padding: 1rem;
+    }
+    .search-icon{
+        position: relative;
+        float: center;
+    }
+}

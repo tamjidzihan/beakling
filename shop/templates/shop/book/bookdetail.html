@@ -1,0 +1,58 @@
+{% extends "shop/base/base.html" %}
+{% load static %}
+{% block title %}
+{{ book.name }}
+{% endblock %}
+{% block content %}
+
+<div class="container ">
+    <div class="row justify-content-center align-items-center p-3 my-5">
+        <div class="col-md-6 col-lg-5 col-xl-4">
+            <div>
+                <a href="{{ book.get_absolute_url }}">
+                    <img class=" img-fluid rounded-3" src="{{ book.image.url }}" alt="books">
+                </a>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-7 col-xl-8 my-3">
+            <div class=" d-flex flex-column justify-content-between">
+                <div>
+                    <h2 class="display-4">
+                        <a href="{{ book.get_absolute_url }}">
+                            {{ book.title }}
+                        </a>
+                    </h2>
+                </div>
+                <div class="my-2">
+                    <p>{{ book.arthur }}</p>
+                </div>
+                <div>
+                    <p>{{ book.description }}</p>
+                </div>
+                <div class="d-flex my-3 flex-row align-items-center">
+                    <h1 class=" font-weight-light">${{ book.price }}</h1>
+                    <h1 class="font-weight-light lead pl-1 ms-4 text-accent-option text-decoration-line-through">
+                        ${{ book.increased_price }}</h1>
+                </div>
+                <div class="text-accent-option">
+                    <p>Rating {{ book.rating }}/5</p>
+                </div>
+                <div class=" d-flex justify-content-between pt-3">
+                    <p>Already Sold: 15pcs</p>
+                    <p>Remaining: 5pcs</p>
+                </div>
+            </div>
+            <a href="{% url 'order:add-to-cart' pk=book.id %}" class="btn btn-warning">Add to Cart</a>
+            <button class="btn btn-danger">Buy E-book on Amazon</button>
+            <a class="btn btn-danger" data-mdb-toggle="tooltip" title="Move to the wish list">
+                <i class="fas fa-heart"></i>
+            </a>
+
+
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

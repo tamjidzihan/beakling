@@ -1,0 +1,119 @@
+{% extends "shop/base/base.html" %}
+{% load static %}
+{% block title %}
+Update Information
+{% endblock %}
+{% block content %}
+<section id="contact">
+    <div class="container-md my-5">
+        <div class="text-center">
+            <h2>Booksite</h2>
+            <p class="lead">
+                Update Information
+            </p>
+        </div>
+        <div class="row justify-content-center my-4">
+            <div class="col-lg-6">
+                <form action="{% url 'appuser:update-user-info'%}" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name:</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-primary">
+                                <i class="bi bi-chat-left-dots"></i>
+                            </span>
+                            <input name="first_name" type="text" class="form-control" id="first_name"
+                                placeholder="first name" value="{{ user.first_name|default:'' }}" required autofocus>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name:</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-primary">
+                                <i class="bi bi-chat-left-dots"></i>
+                            </span>
+                            <input name="last_name" type="text" class="form-control" id="last_name"
+                                placeholder="last name" value="{{ user.last_name|default:'' }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="phone">Phone:</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-primary">
+                                <i class="bi bi-123"></i>
+                            </span>
+                            <input name="phone" id="phone" type="number" class="form-control" placeholder="+123456789"
+                                value="{{ customer.phone }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date_of_birth" class="form-label">Date Of Birth</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-primary">
+                                <i class="bi bi-calendar-check"></i>
+                            </span>
+                            <input name="date_of_birth" type="date" class="form-control" id="date_of_birth"
+                                value="{{ customer.date_of_birth|date:'Y-m-d'|default:'2000-01-01' }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address:</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-primary">
+                                <i class="bi bi-geo-alt"></i>
+                            </span>
+                            <input name="address" type="text" class="form-control" id="address" placeholder="Address"
+                                value="{{ customer.address|default:'' }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="city" class="form-label">City:</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-primary">
+                                <i class="bi bi-geo-alt"></i>
+                            </span>
+                            <input name="city" type="text" class="form-control" id="city" placeholder="city"
+                                value="{{ customer.city|default:'' }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="country" class="form-label">Country:</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-primary">
+                                <i class="bi bi-geo-alt"></i>
+                            </span>
+                            <input name="country" type="text" class="form-control" id="country" placeholder="country"
+                                value="{{ customer.country|default:'' }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="zipcode">Zipcode:</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-primary">
+                                <i class="bi bi-123"></i>
+                            </span>
+                            <input name="zipcode" id="zipcode" type="number" class="form-control" placeholder="zipcode"
+                                value="{{ customer.zipcode }}" required>
+                        </div>
+                    </div>
+
+
+                    <button class="btn btn-primary" type="submit">Update</button>
+                    <button class="btn btn-warning ms-4 px-4" type="reset">Reset</button>
+                </form>
+
+                <div class="my-5">
+                    {% for message in messages %}
+                    <div class="alert alert-danger" role="alert">
+                        {{message}}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+{% endblock %}
