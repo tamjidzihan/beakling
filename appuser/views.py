@@ -13,6 +13,7 @@ from django.urls import reverse_lazy
 
 class PasswordResetViewSet(PasswordResetView):
     email_template_name = "appuser/registration/password_reset_email.html"
+    template_name = "appuser/registration/password_reset_form.html"
     success_url = reverse_lazy("appuser:password_reset_done")
 
 class PasswordResetDoneViewSet(PasswordResetDoneView): 

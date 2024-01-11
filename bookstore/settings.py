@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
+    #third-party apps
+    "crispy_forms",
+    "crispy_bootstrap5",
+
 
     'appuser',
     'core',
@@ -162,7 +166,14 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 APPEND_SLASH = False
 
+#For crispy from for bootstrap5
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
+
+
+
+#Email Reset Password service
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Gmail SMTP settings
