@@ -5,7 +5,38 @@ from django.contrib.auth.decorators import login_required
 from core.models import User
 from .models import Customer
 
+from django.contrib.auth.views import PasswordResetView,PasswordResetDoneView,PasswordResetConfirmView,PasswordResetCompleteView
+from django.urls import reverse_lazy
+
 # Create your views here.
+
+
+class PasswordResetViewSet(PasswordResetView):
+    email_template_name = "appuser/registration/password_reset_email.html"
+    success_url = reverse_lazy("appuser:password_reset_done")
+
+class PasswordResetDoneViewSet(PasswordResetDoneView): 
+    template_name = "appuser/registration/password_reset_done.html"
+
+
+class PasswordResetConfirmViewSet(PasswordResetConfirmView):
+    template_name = "appuser/registration/password_reset_confirm.html"
+    success_url = reverse_lazy("appuser:password_reset_complete")
+
+class PasswordResetCompleteViewSet(PasswordResetCompleteView):
+    template_name = "appuser/registration/password_reset_complete.html"
+
+
+
+
+
+
+
+
+
+
+
+
 
 def register(request):
     if request.method == "POST":
@@ -115,3 +146,6 @@ def update_user_info(request):
 
 def registration_error(request):
     return  render(request,'appuser/registration_error.html')
+
+
+

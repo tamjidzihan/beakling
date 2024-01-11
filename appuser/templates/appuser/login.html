@@ -52,10 +52,12 @@
                                 <input name="password" type="password" class="form-control" id="password"
                                     placeholder="Password" required>
                             </div>
+                            <a href="{% url 'appuser:password_reset' %}" class="text-warning"> forgot password?</a>
                         </div>
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="remember">
                             <label class="form-check-label text-white" for="remember">Remember me?</label>
+
                         </div>
                         <button class="btn btn-primary" type="submit">Log In</button>
                         <div class="text-center my-3">

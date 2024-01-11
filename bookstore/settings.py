@@ -29,6 +29,7 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECURITY WARNING: don't run with debug turned on in production!
+
 # SECRET_KEY = 'django-insecure-5_6)-=n78q*!p1b%k5&u753!l^oh+lbx&5$6)lzsfwefe!=rhu'
 # DEBUG = True
 # ALLOWED_HOSTS = []
@@ -160,3 +161,19 @@ AUTH_USER_MODEL = 'core.User'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 APPEND_SLASH = False
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Gmail SMTP settings
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Your Gmail email address and password
+EMAIL_HOST_USER = 'tamjidzihan038@gmail.com'
+EMAIL_HOST_PASSWORD = 'nyia pomx rlnm tirw'
+
+# Set a default 'from' address for outgoing emails
+DEFAULT_FROM_EMAIL = 'tamjidzihan038@gmail.com'
+SERVER_EMAIL = 'tamjidzihan038@gmail.com'
