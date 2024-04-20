@@ -21,18 +21,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
-DEBUG = os.environ.get("DEBUG","False").lower()=="true"
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+# SECRET_KEY = os.environ.get("SECRET_KEY")
+# DEBUG = os.environ.get("DEBUG","False").lower()=="true"
+# ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECURITY WARNING: don't run with debug turned on in production!
 
-# SECRET_KEY = 'django-insecure-5_6)-=n78q*!p1b%k5&u753!l^oh+lbx&5$6)lzsfwefe!=rhu'
-# DEBUG = True
-# ALLOWED_HOSTS = []
+SECRET_KEY = 'django-insecure-5_6)-=n78q*!p1b%k5&u753!l^oh+lbx&5$6)lzsfwefe!=rhu'
+DEBUG = True
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -92,25 +92,25 @@ WSGI_APPLICATION = 'bookstore.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
 DATABASES = {
-  'default': {
-    'ENGINE': 'django.db.backends.postgresql',
-    'NAME': 'beakling',
-    'USER': 'tamjidzihan038',
-    'PASSWORD': 'UJ7rQ0SxgEOB',
-    'HOST': 'ep-late-bird-13987363.ap-southeast-1.aws.neon.tech',
-    'PORT': '5432',
-    'OPTIONS': {'sslmode': 'require'},
-  }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'beaklingdb/db.sqlite3',
+    }
 }
+
+
+# DATABASES = {
+#   'default': {
+#     'ENGINE': 'django.db.backends.postgresql',
+#     'NAME': 'beakling',
+#     'USER': 'tamjidzihan038',
+#     'PASSWORD': 'UJ7rQ0SxgEOB',
+#     'HOST': 'ep-late-bird-13987363.ap-southeast-1.aws.neon.tech',
+#     'PORT': '5432',
+#     'OPTIONS': {'sslmode': 'require'},
+#   }
+# }
 
 
 # Password validation

@@ -73,14 +73,6 @@ def product_list(request):
     return render(request, 'shop/product/porductlist.html',context)
 
 
-
-
-
-
-
-
-
-
     
 def about(request):
     return render(request,'shop/book/about.html')
