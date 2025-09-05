@@ -20,3 +20,9 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+
+# Custom admin site settings
+admin.site.site_header = 'Beakling E-commerce Admin'
+admin.site.site_title = 'Beakling E-commerce'
+admin.site.index_title = 'Welcome to Beakling E-commerce Administration'
