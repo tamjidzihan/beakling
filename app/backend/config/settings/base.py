@@ -223,9 +223,7 @@ ACCOUNT_ADAPTER = 'apps.users.adapters.CustomAccountAdapter'
 # API Documentation
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Beakling E-commerce API',
-    'DESCRIPTION': """
-    Welcome to the Beakling E-commerce API documentation.
-    """,
+    'DESCRIPTION': ' Welcome to the Beakling E-commerce API documentation.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'SWAGGER_UI_SETTINGS': {
