@@ -9,7 +9,7 @@ from .models import User, VendorProfile, CustomerProfile, Address
 
 class UserSerializer(TimestampedSerializer):
     """User serializer for general use."""
-    
+
     class Meta:
         model = User
         fields = [
@@ -17,13 +17,15 @@ class UserSerializer(TimestampedSerializer):
             'is_vendor_approved', 'avatar', 'phone', 'date_of_birth',
             'is_active', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'role', 'is_vendor_approved', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'role',
+                            'is_vendor_approved', 'created_at', 'updated_at']
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """User registration serializer."""
-    
-    password = serializers.CharField(write_only=True, validators=[validate_password])
+
+    password = serializers.CharField(
+        write_only=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True)
 
     class Meta:
@@ -49,9 +51,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 class PasswordChangeSerializer(serializers.Serializer):
     """Password change serializer."""
-    
+
     old_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(required=True, validators=[validate_password])
+    new_password = serializers.CharField(
+        required=True, validators=[validate_password])
 
     def validate_old_password(self, value):
         user = self.context['request'].user
@@ -62,10 +65,10 @@ class PasswordChangeSerializer(serializers.Serializer):
 
 class VendorProfileSerializer(TimestampedSerializer):
     """Vendor profile serializer."""
-    
+
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_name = serializers.CharField(source='user.full_name', read_only=True)
-    
+
     class Meta:
         model = VendorProfile
         fields = [
@@ -80,9 +83,23 @@ class VendorProfileSerializer(TimestampedSerializer):
         ]
 
 
+class VendorApprovalSerializer(serializers.Serializer):
+    """Serializer for vendor approval actions."""
+    action = serializers.ChoiceField(
+        choices=['approve', 'reject'], required=True)
+    rejection_reason = serializers.CharField(required=False, allow_blank=True)
+
+    def validate(self, attrs):
+        if attrs['action'] == 'reject' and not attrs.get('rejection_reason'):
+            raise serializers.ValidationError(
+                "Rejection reason is required when rejecting a vendor."
+            )
+        return attrs
+
+
 class VendorApplicationSerializer(serializers.ModelSerializer):
     """Vendor application serializer."""
-    
+
     class Meta:
         model = VendorProfile
         fields = [
@@ -95,7 +112,7 @@ class VendorApplicationSerializer(serializers.ModelSerializer):
         # Update user role to VENDOR
         user.role = 'VENDOR'
         user.save()
-        
+
         # Create vendor profile
         vendor_profile = VendorProfile.objects.create(
             user=user,
@@ -106,7 +123,7 @@ class VendorApplicationSerializer(serializers.ModelSerializer):
 
 class CustomerProfileSerializer(TimestampedSerializer):
     """Customer profile serializer."""
-    
+
     class Meta:
         model = CustomerProfile
         fields = [
@@ -118,7 +135,7 @@ class CustomerProfileSerializer(TimestampedSerializer):
 
 class AddressSerializer(TimestampedSerializer):
     """Address serializer."""
-    
+
     class Meta:
         model = Address
         fields = [
@@ -136,7 +153,7 @@ class AddressSerializer(TimestampedSerializer):
 
 class GoogleAuthSerializer(serializers.Serializer):
     """Google authentication serializer."""
-    
+
     access_token = serializers.CharField(required=True)
 
     def validate_access_token(self, value):
