@@ -53,12 +53,13 @@ THIRD_PARTY_APPS = [
     'dj_rest_auth.registration',
 
     'django_cleanup.apps.CleanupConfig',
-    'ckeditor',
+    'django_ckeditor_5',
 ]
 
 LOCAL_APPS = [
     'apps.common',
     'apps.users',
+    'apps.catalog',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -153,6 +154,14 @@ AUTH_USER_MODEL = 'users.User'
 
 # Site ID for django-allauth
 SITE_ID = 1
+
+# Ckeditor 5 configaretions
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': ['bold', 'italic', 'link', 'bulletedList', 'numberedList'],
+    }
+}
+
 
 # REST Framework Settings
 REST_FRAMEWORK = {
