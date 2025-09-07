@@ -64,6 +64,8 @@ class Track(BaseModel, OrderedModel):
     @property
     def formatted_duration(self):
         """Get formatted duration (mm:ss)."""
+        if self.duration is None:
+            return "00:00"  # Or return an empty string if preferred
         minutes, seconds = divmod(self.duration, 60)
         return f"{minutes:02d}:{seconds:02d}"
 
