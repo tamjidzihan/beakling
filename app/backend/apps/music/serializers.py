@@ -1,19 +1,19 @@
 """Music serializers."""
 
 from rest_framework import serializers
-from django.core.files.base import ContentFile
 from apps.common.serializers import TimestampedSerializer
 from .models import Track, Playlist, PlaylistTrack, PlayHistory, MusicSettings
 
 
 class TrackSerializer(TimestampedSerializer):
     """Track serializer."""
-    
-    uploader_name = serializers.CharField(source='uploader.full_name', read_only=True)
+
+    uploader_name = serializers.CharField(
+        source='uploader.full_name', read_only=True)
     formatted_duration = serializers.CharField(read_only=True)
     stream_url = serializers.SerializerMethodField()
     cover_url = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Track
         fields = [
@@ -46,7 +46,7 @@ class TrackSerializer(TimestampedSerializer):
 
 class TrackUploadSerializer(serializers.ModelSerializer):
     """Track upload serializer with file validation."""
-    
+
     class Meta:
         model = Track
         fields = [
@@ -59,23 +59,25 @@ class TrackUploadSerializer(serializers.ModelSerializer):
         valid_extensions = ['.mp3', '.wav', '.ogg', '.m4a']
         import os
         ext = os.path.splitext(value.name)[1].lower()
-        
+
         if ext not in valid_extensions:
             raise serializers.ValidationError(
                 'Only MP3, WAV, OGG, and M4A files are allowed.'
             )
-        
+
         # Validate file size (50MB max)
         if value.size > 50 * 1024 * 1024:
             raise serializers.ValidationError('File size cannot exceed 50MB.')
-        
+
         return value
 
     def validate_duration(self, value):
         if value <= 0:
-            raise serializers.ValidationError('Duration must be greater than 0.')
+            raise serializers.ValidationError(
+                'Duration must be greater than 0.')
         if value > 3600:  # 1 hour max
-            raise serializers.ValidationError('Track duration cannot exceed 1 hour.')
+            raise serializers.ValidationError(
+                'Track duration cannot exceed 1 hour.')
         return value
 
     def create(self, validated_data):
@@ -85,11 +87,11 @@ class TrackUploadSerializer(serializers.ModelSerializer):
 
 class TrackListSerializer(serializers.ModelSerializer):
     """Minimal track serializer for lists."""
-    
+
     formatted_duration = serializers.CharField(read_only=True)
     stream_url = serializers.SerializerMethodField()
     cover_url = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Track
         fields = [
@@ -112,9 +114,9 @@ class TrackListSerializer(serializers.ModelSerializer):
 
 class PlaylistTrackSerializer(serializers.ModelSerializer):
     """Playlist track serializer."""
-    
+
     track = TrackListSerializer(read_only=True)
-    
+
     class Meta:
         model = PlaylistTrack
         fields = ['id', 'track', 'sort_order', 'added_at']
@@ -122,12 +124,14 @@ class PlaylistTrackSerializer(serializers.ModelSerializer):
 
 class PlaylistSerializer(TimestampedSerializer):
     """Playlist serializer."""
-    
-    creator_name = serializers.CharField(source='creator.full_name', read_only=True)
-    tracks = PlaylistTrackSerializer(source='playlisttrack_set', many=True, read_only=True)
+
+    creator_name = serializers.CharField(
+        source='creator.full_name', read_only=True)
+    tracks = PlaylistTrackSerializer(
+        source='playlisttrack_set', many=True, read_only=True)
     track_count = serializers.IntegerField(read_only=True)
     total_duration = serializers.IntegerField(read_only=True)
-    
+
     class Meta:
         model = Playlist
         fields = [
@@ -147,11 +151,11 @@ class PlaylistSerializer(TimestampedSerializer):
 
 class PlayHistorySerializer(serializers.ModelSerializer):
     """Play history serializer."""
-    
+
     track_title = serializers.CharField(source='track.title', read_only=True)
     track_artist = serializers.CharField(source='track.artist', read_only=True)
     user_email = serializers.CharField(source='user.email', read_only=True)
-    
+
     class Meta:
         model = PlayHistory
         fields = [
@@ -163,7 +167,7 @@ class PlayHistorySerializer(serializers.ModelSerializer):
 
 class MusicSettingsSerializer(serializers.ModelSerializer):
     """Music settings serializer."""
-    
+
     class Meta:
         model = MusicSettings
         fields = [
@@ -173,18 +177,20 @@ class MusicSettingsSerializer(serializers.ModelSerializer):
 
     def validate_default_volume(self, value):
         if not 0 <= value <= 100:
-            raise serializers.ValidationError('Volume must be between 0 and 100.')
+            raise serializers.ValidationError(
+                'Volume must be between 0 and 100.')
         return value
 
     def validate_crossfade_duration(self, value):
         if not 0 <= value <= 10:
-            raise serializers.ValidationError('Crossfade duration must be between 0 and 10 seconds.')
+            raise serializers.ValidationError(
+                'Crossfade duration must be between 0 and 10 seconds.')
         return value
 
 
 class TrackReorderSerializer(serializers.Serializer):
     """Track reorder serializer."""
-    
+
     track_ids = serializers.ListField(
         child=serializers.IntegerField(),
         allow_empty=False
@@ -195,17 +201,18 @@ class TrackReorderSerializer(serializers.Serializer):
         existing_count = Track.objects.filter(id__in=value).count()
         if existing_count != len(value):
             raise serializers.ValidationError('Some track IDs are invalid.')
-        
+
         # Ensure no duplicates
         if len(value) != len(set(value)):
-            raise serializers.ValidationError('Duplicate track IDs are not allowed.')
-        
+            raise serializers.ValidationError(
+                'Duplicate track IDs are not allowed.')
+
         return value
 
 
 class FeaturedTrackSerializer(serializers.Serializer):
     """Featured track serializer."""
-    
+
     track_id = serializers.IntegerField()
 
     def validate_track_id(self, value):
