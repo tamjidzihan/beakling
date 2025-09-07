@@ -13,7 +13,7 @@ from .models import Category, Tag, Product, Book, Toy, ProductImage, Review, Wis
 from .serializers import (
     CategorySerializer, TagSerializer, ProductListSerializer, ProductDetailSerializer,
     BookSerializer, ToySerializer, BookListSerializer, ToyListSerializer,
-    ProductImageSerializer, ReviewSerializer, WishlistSerializer, ProductSearchSerializer
+    ProductImageSerializer, ReviewSerializer, WishlistSerializer, WishlistActionResponseSerializer, ProductSearchSerializer
 )
 from .filters import ProductFilter
 
@@ -89,8 +89,6 @@ class CategoryListView(generics.ListCreateAPIView):
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or delete a specific category.
-
-    Admin users can update or delete categories. Other users can only view.
     """
     queryset = Category.objects.filter(is_active=True)
     serializer_class = CategorySerializer
@@ -132,15 +130,6 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     )
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
-    """
-    Retrieve, update, or delete a specific category.
-
-    Admin users can update or delete categories. Other users can only view.
-    """
-    queryset = Category.objects.filter(is_active=True)
-    serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrReadOnly]
-    lookup_field = 'slug'
 
 
 @extend_schema(tags=['Tags'])
@@ -187,13 +176,6 @@ class TagListView(generics.ListCreateAPIView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
-
-    """List and create tags."""
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    permission_classes = [IsAdminOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
 
 
 @extend_schema(tags=['Products'])
@@ -472,7 +454,6 @@ class BookListCreateView(generics.ListCreateAPIView):
         serializer.save(vendor=self.request.user)
 
 
-# _____________________________________________+++++++++++++++++++++++++++_______________________________
 @extend_schema(tags=['Books'])
 class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -530,9 +511,6 @@ class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ToyListCreateView(generics.ListCreateAPIView):
     """
     List and create toys.
-
-    Vendors can create new toys and manage their own toy listings.
-    All users can browse toys.
     """
     permission_classes = [IsVendorOrReadOnly]
     filter_backends = [DjangoFilterBackend,
@@ -598,8 +576,6 @@ class ToyListCreateView(generics.ListCreateAPIView):
 class ToyDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or delete a specific toy.
-
-    Vendors can update or delete their own toys. All users can view toys.
     """
     serializer_class = ToySerializer
     permission_classes = [IsVendorOrReadOnly]
@@ -651,24 +627,13 @@ class ToyDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ProductImageUploadView(generics.CreateAPIView):
     """
     Upload images for a product.
-
-    Vendors can upload images for their own products only.
-    Supports multiple image formats (JPG, PNG, WebP).
     """
     serializer_class = ProductImageSerializer
     permission_classes = [IsVendorOrReadOnly]
 
     @extend_schema(
         summary="Upload product image",
-        description="""
-        Upload an image for a specific product.
-        
-        **Requirements:**
-        - Vendor must own the product
-        - Image file must be provided
-        - Supported formats: JPG, PNG, WebP
-        - Maximum file size: 5MB
-        """,
+        description="Upload an image for a specific product.",
         responses={
             201: ProductImageSerializer,
             400: OpenApiResponse(description="Invalid image or product not found"),
@@ -695,11 +660,9 @@ class ProductImageUploadView(generics.CreateAPIView):
 class ProductReviewListCreateView(generics.ListCreateAPIView):
     """
     List and create product reviews.
-
-    Authenticated users can create reviews for products.
-    All users can browse reviews.
     """
     serializer_class = ReviewSerializer
+    queryset = Review.objects.none()
 
     @extend_schema(
         summary="List product reviews",
@@ -723,14 +686,7 @@ class ProductReviewListCreateView(generics.ListCreateAPIView):
 
     @extend_schema(
         summary="Create product review",
-        description="""
-        Create a new review for a product.
-        
-        **Requirements:**
-        - User must be authenticated
-        - Rating must be between 1-5 stars
-        - User can only review each product once
-        """,
+        description="Create a new review for a product.",
         parameters=[
             OpenApiParameter(
                 name='product_id',
@@ -769,12 +725,10 @@ class ProductReviewListCreateView(generics.ListCreateAPIView):
 class WishlistListView(generics.ListAPIView):
     """
     Get user's wishlist items.
-
-    Returns all products that the authenticated user has added to their wishlist.
-    Requires authentication.
     """
     serializer_class = WishlistSerializer
     permission_classes = [IsAuthenticated]
+    queryset = Wishlist.objects.none()
 
     @extend_schema(
         summary="Get wishlist",
@@ -791,17 +745,30 @@ class WishlistListView(generics.ListAPIView):
         return Wishlist.objects.filter(user=self.request.user).select_related('product')
 
 
-# __________________________________++++++++++++++++++++++++++++++______________________________________________
-
-
-@extend_schema(tags=['Wishlist'])
+@extend_schema(
+    tags=['Wishlist'],
+    summary="Add to wishlist",
+    description="Add a product to the user's wishlist.",
+    parameters=[
+        OpenApiParameter(
+            name='product_id',
+            description='ID of the product to add',
+            required=True,
+            type=int,
+            location=OpenApiParameter.PATH
+        )
+    ],
+    responses={
+        200: WishlistActionResponseSerializer,
+        201: WishlistActionResponseSerializer,
+        404: OpenApiResponse(description="Product not found or not in wishlist")
+    }
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_to_wishlist(request, product_id):
     """
     Add a product to the user's wishlist.
-
-    Requires authentication. Users can add products to their personal wishlist.
     """
     try:
         product = Product.objects.get(id=product_id, is_active=True)
@@ -811,9 +778,17 @@ def add_to_wishlist(request, product_id):
         )
 
         if created:
-            return Response({'message': 'Product added to wishlist.'})
+            response_data = {
+                'message': 'Product added to wishlist.',
+                'data': WishlistSerializer(wishlist_item).data
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
         else:
-            return Response({'message': 'Product already in wishlist.'})
+            response_data = {
+                'message': 'Product already in wishlist.',
+                'data': WishlistSerializer(wishlist_item).data
+            }
+            return Response(response_data)
 
     except Product.DoesNotExist:
         return Response(
@@ -822,22 +797,43 @@ def add_to_wishlist(request, product_id):
         )
 
 
-@extend_schema(tags=['Wishlist'])
+@extend_schema(
+    tags=['Wishlist'],
+    summary="Remove from wishlist",
+    description="Remove a product from the user's wishlist.",
+    parameters=[
+        OpenApiParameter(
+            name='product_id',
+            description='ID of the product to remove',
+            required=True,
+            type=int,
+            location=OpenApiParameter.PATH
+        )
+    ],
+    responses={
+        200: WishlistActionResponseSerializer,
+        404: OpenApiResponse(description="Product not in wishlist")
+    }
+)
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def remove_from_wishlist(request, product_id):
     """
     Remove a product from the user's wishlist.
-
-    Requires authentication. Removes the specified product from the user's wishlist.
     """
     try:
         wishlist_item = Wishlist.objects.get(
             user=request.user,
             product_id=product_id
         )
+        wishlist_data = WishlistSerializer(wishlist_item).data
         wishlist_item.delete()
-        return Response({'message': 'Product removed from wishlist.'})
+
+        response_data = {
+            'message': 'Product removed from wishlist.',
+            'data': wishlist_data  # Include the deleted item data
+        }
+        return Response(response_data)
 
     except Wishlist.DoesNotExist:
         return Response(
@@ -846,7 +842,22 @@ def remove_from_wishlist(request, product_id):
         )
 
 
-@extend_schema(tags=['Search Suggestions'])
+@extend_schema(
+    tags=['Search Suggestions'],
+    summary="Get search suggestions",
+    description="Get autocomplete suggestions for search queries.",
+    parameters=[
+        OpenApiParameter(
+            name='q',
+            description='Search query (min 2 characters)',
+            required=True,
+            type=str
+        )
+    ],
+    responses={
+        400: OpenApiResponse(description="Query too short")
+    }
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def search_suggestions(request):
@@ -883,7 +894,14 @@ def search_suggestions(request):
     return Response(suggestions[:10])
 
 
-@extend_schema(tags=['Products'])
+@extend_schema(
+    tags=['Products'],
+    summary="Get featured products",
+    description="Returns a curated list of featured products for display on homepage.",
+    responses={
+        200: ProductListSerializer,
+    }
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def featured_products(request):

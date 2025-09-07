@@ -31,7 +31,7 @@ class UserRegistrationView(generics.CreateAPIView):
         description="""
         Register a new user with email, password, and basic information.
         Returns JWT tokens upon successful registration.
-        
+
         **Required fields:** email, password, first_name, last_name
         """,
         examples=[
@@ -135,7 +135,7 @@ class PasswordChangeView(generics.UpdateAPIView):
         summary="Change password",
         description="""
         Change the authenticated user's password.
-        
+
         **Required fields:** current_password, new_password
         """,
         examples=[
@@ -182,7 +182,7 @@ class VendorApplicationView(generics.CreateAPIView):
         summary="Apply as vendor",
         description="""
         Submit a vendor application. Users can only have one active application.
-        
+
         **Required fields:** business_name, business_address, business_phone, business_email
         """,
         responses={
@@ -240,7 +240,7 @@ class VendorApprovalView(generics.UpdateAPIView):
         summary="Approve/reject vendor",
         description="""
         Approve or reject a vendor application.
-        
+
         **Required parameters:**
         - action: "approve" or "reject"
         - rejection_reason: Required if action is "reject"
@@ -372,6 +372,8 @@ class AddressListCreateView(generics.ListCreateAPIView):
         return super().post(request, *args, **kwargs)
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Address.objects.none()  # For drf-spectacular
         return Address.objects.filter(user=self.request.user)
 
 

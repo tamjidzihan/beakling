@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
@@ -155,14 +155,6 @@ AUTH_USER_MODEL = 'users.User'
 # Site ID for django-allauth
 SITE_ID = 1
 
-# Ckeditor 5 configaretions
-CKEDITOR_5_CONFIGS = {
-    'default': {
-        'toolbar': ['bold', 'italic', 'link', 'bulletedList', 'numberedList'],
-    }
-}
-
-
 # REST Framework Settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -220,6 +212,7 @@ ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_ADAPTER = 'apps.users.adapters.CustomAccountAdapter'
 
+
 # API Documentation
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Beakling E-commerce API',
@@ -243,3 +236,61 @@ SPECTACULAR_SETTINGS = {
     'TERMS_OF_SERVICE': 'https://beakling.com/terms',
     # Other available settings...
 }
+
+# Ckeditor 5 configaretions
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': ['bold', 'italic', 'link', 'bulletedList', 'numberedList'],
+        'height': 200,
+        'width': '100%',
+    }
+}
+
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs/django.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'apps': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+# Create logs directory
+os.makedirs(BASE_DIR / 'logs', exist_ok=True)
