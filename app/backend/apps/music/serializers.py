@@ -27,13 +27,14 @@ class TrackSerializer(TimestampedSerializer):
             'stream_url', 'cover_url', 'created_at', 'updated_at'
         ]
 
-    def get_stream_url(self, obj):
+    def get_stream_url(self, obj: Track) -> str | None:
         request = self.context.get('request')
         if request and obj.file:
+            # type: ignore
             return request.build_absolute_uri(f'/api/music/stream/{obj.id}/')
         return None
 
-    def get_cover_url(self, obj):
+    def get_cover_url(self, obj: Track) -> str | None:
         request = self.context.get('request')
         if request and obj.cover_image:
             return request.build_absolute_uri(obj.cover_image.url)
@@ -99,13 +100,13 @@ class TrackListSerializer(serializers.ModelSerializer):
             'is_featured', 'genre', 'play_count', 'stream_url', 'cover_url'
         ]
 
-    def get_stream_url(self, obj):
+    def get_stream_url(self, obj: Track) -> str | None:
         request = self.context.get('request')
         if request:
             return request.build_absolute_uri(f'/api/music/stream/{obj.id}/')
         return None
 
-    def get_cover_url(self, obj):
+    def get_cover_url(self, obj: Track) -> str | None:
         request = self.context.get('request')
         if request and obj.cover_image:
             return request.build_absolute_uri(obj.cover_image.url)
