@@ -60,6 +60,7 @@ LOCAL_APPS = [
     'apps.common',
     'apps.users',
     'apps.catalog',
+    'apps.orders',
     'apps.music',
 ]
 
