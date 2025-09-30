@@ -11,12 +11,14 @@ from .models import Cart, CartItem, Order, OrderItem, ShippingMethod, PaymentInt
 
 class CartItemSerializer(TimestampedSerializer):
     """Cart item serializer."""
-    
+
     product = ProductListSerializer(read_only=True)
     product_id = serializers.IntegerField(write_only=True)
-    unit_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-    total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-    
+    unit_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True)
+    total_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True)
+
     class Meta:
         model = CartItem
         fields = [
@@ -38,9 +40,9 @@ class CartItemSerializer(TimestampedSerializer):
     def validate_quantity(self, value):
         if value < 1:
             raise serializers.ValidationError("Quantity must be at least 1.")
-        
+
         # Check if we have enough inventory
-        product_id = self.initial_data.get('product_id')
+        product_id = self.initial_data.get('product_id')  # type: ignore
         if product_id:
             try:
                 from apps.catalog.models import Product
@@ -51,18 +53,20 @@ class CartItemSerializer(TimestampedSerializer):
                     )
             except Product.DoesNotExist:
                 pass  # Will be caught by product_id validation
-        
+
         return value
 
 
 class CartSerializer(TimestampedSerializer):
     """Cart serializer."""
-    
+
     items = CartItemSerializer(many=True, read_only=True)
     total_items = serializers.IntegerField(read_only=True)
-    subtotal = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-    total_savings = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-    
+    subtotal = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True)
+    total_savings = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True)
+
     class Meta:
         model = Cart
         fields = [
@@ -74,9 +78,9 @@ class CartSerializer(TimestampedSerializer):
 
 class ShippingMethodSerializer(serializers.ModelSerializer):
     """Shipping method serializer."""
-    
+
     estimated_delivery = serializers.CharField(read_only=True)
-    
+
     class Meta:
         model = ShippingMethod
         fields = [
@@ -88,7 +92,7 @@ class ShippingMethodSerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(TimestampedSerializer):
     """Order item serializer."""
-    
+
     class Meta:
         model = OrderItem
         fields = [
@@ -101,10 +105,11 @@ class OrderItemSerializer(TimestampedSerializer):
 
 class OrderListSerializer(TimestampedSerializer):
     """Order list serializer."""
-    
+
     items_count = serializers.SerializerMethodField()
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
-    
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
+
     class Meta:
         model = Order
         fields = [
@@ -119,10 +124,11 @@ class OrderListSerializer(TimestampedSerializer):
 
 class OrderDetailSerializer(TimestampedSerializer):
     """Order detail serializer."""
-    
+
     items = OrderItemSerializer(many=True, read_only=True)
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
-    
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
+
     class Meta:
         model = Order
         fields = [
@@ -141,7 +147,7 @@ class OrderDetailSerializer(TimestampedSerializer):
 
 class OrderCreateSerializer(serializers.Serializer):
     """Order creation serializer."""
-    
+
     shipping_address_id = serializers.IntegerField()
     billing_address_id = serializers.IntegerField()
     shipping_method_id = serializers.IntegerField()
@@ -152,7 +158,8 @@ class OrderCreateSerializer(serializers.Serializer):
             ('cash_on_delivery', 'Cash on Delivery'),
         ]
     )
-    customer_notes = serializers.CharField(max_length=500, required=False, allow_blank=True)
+    customer_notes = serializers.CharField(
+        max_length=500, required=False, allow_blank=True)
 
     def validate_shipping_address_id(self, value):
         from apps.users.models import Address
@@ -182,9 +189,9 @@ class OrderCreateSerializer(serializers.Serializer):
     @transaction.atomic
     def create(self, validated_data):
         from apps.users.models import Address
-        
+
         user = self.context['request'].user
-        
+
         # Get addresses
         shipping_address = Address.objects.get(
             id=validated_data['shipping_address_id'],
@@ -196,29 +203,29 @@ class OrderCreateSerializer(serializers.Serializer):
             user=user,
             type='billing'
         )
-        
+
         # Get shipping method
         shipping_method = ShippingMethod.objects.get(
             id=validated_data['shipping_method_id'],
             is_active=True
         )
-        
+
         # Get user's cart
         try:
             cart = Cart.objects.get(user=user)
         except Cart.DoesNotExist:
             raise serializers.ValidationError("Cart is empty.")
-        
-        if not cart.items.exists():
+
+        if not cart.items.exists():  # type: ignore
             raise serializers.ValidationError("Cart is empty.")
-        
+
         # Calculate totals
         subtotal = cart.subtotal
         tax_rate = Decimal('0.08')  # 8% tax rate
         tax_amount = subtotal * tax_rate
         shipping_amount = shipping_method.price
         total_amount = subtotal + tax_amount + shipping_amount
-        
+
         # Create order
         order = Order.objects.create(
             user=user,
@@ -254,15 +261,15 @@ class OrderCreateSerializer(serializers.Serializer):
             payment_method=validated_data['payment_method'],
             customer_notes=validated_data.get('customer_notes', '')
         )
-        
+
         # Create order items and update inventory
-        for cart_item in cart.items.all():
+        for cart_item in cart.items.all():  # type: ignore
             # Check inventory again
             if cart_item.product.inventory < cart_item.quantity:
                 raise serializers.ValidationError(
                     f"Insufficient inventory for {cart_item.product.title}."
                 )
-            
+
             # Create order item
             OrderItem.objects.create(
                 order=order,
@@ -270,20 +277,20 @@ class OrderCreateSerializer(serializers.Serializer):
                 quantity=cart_item.quantity,
                 unit_price=cart_item.unit_price
             )
-            
+
             # Update inventory
             cart_item.product.inventory -= cart_item.quantity
             cart_item.product.save(update_fields=['inventory'])
-        
+
         # Clear cart
-        cart.items.all().delete()
-        
+        cart.items.all().delete()  # type: ignore
+
         return order
 
 
 class PaymentIntentSerializer(TimestampedSerializer):
     """Payment intent serializer."""
-    
+
     class Meta:
         model = PaymentIntent
         fields = [
@@ -295,10 +302,12 @@ class PaymentIntentSerializer(TimestampedSerializer):
 
 class VendorEarningsSerializer(TimestampedSerializer):
     """Vendor earnings serializer."""
-    
-    order_number = serializers.CharField(source='order.order_number', read_only=True)
-    customer_email = serializers.CharField(source='order.user.email', read_only=True)
-    
+
+    order_number = serializers.CharField(
+        source='order.order_number', read_only=True)
+    customer_email = serializers.CharField(
+        source='order.user.email', read_only=True)
+
     class Meta:
         model = VendorEarnings
         fields = [

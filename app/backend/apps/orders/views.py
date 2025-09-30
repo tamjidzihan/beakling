@@ -13,20 +13,21 @@ from .serializers import (
     CartSerializer, CartItemSerializer, OrderListSerializer, OrderDetailSerializer,
     OrderCreateSerializer, ShippingMethodSerializer, VendorEarningsSerializer
 )
+from decimal import Decimal
 
 
 def get_or_create_cart(request):
     """Get or create cart for user or session."""
     if request.user.is_authenticated:
         cart, created = Cart.objects.get_or_create(user=request.user)
-        
+
         # Merge session cart if exists
         session_key = request.session.session_key
         if session_key and not created:
             try:
                 session_cart = Cart.objects.get(session_key=session_key)
                 # Merge items
-                for session_item in session_cart.items.all():
+                for session_item in session_cart.items.all():  # type: ignore
                     cart_item, item_created = CartItem.objects.get_or_create(
                         cart=cart,
                         product=session_item.product,
@@ -35,7 +36,7 @@ def get_or_create_cart(request):
                     if not item_created:
                         cart_item.quantity += session_item.quantity
                         cart_item.save()
-                
+
                 # Delete session cart
                 session_cart.delete()
             except Cart.DoesNotExist:
@@ -46,7 +47,7 @@ def get_or_create_cart(request):
             request.session.create()
         session_key = request.session.session_key
         cart, created = Cart.objects.get_or_create(session_key=session_key)
-    
+
     return cart
 
 
@@ -66,22 +67,22 @@ class CartItemListView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         cart = get_or_create_cart(self.request)
-        return cart.items.all().select_related('product__category')
+        return cart.items.all().select_related('product__category')  # type: ignore
 
     def perform_create(self, serializer):
         cart = get_or_create_cart(self.request)
         product_id = serializer.validated_data['product_id']
         quantity = serializer.validated_data['quantity']
-        
+
         # Check if item already exists in cart
         try:
             cart_item = CartItem.objects.get(cart=cart, product_id=product_id)
             cart_item.quantity += quantity
-            
+
             # Check inventory
             if cart_item.quantity > cart_item.product.inventory:
                 cart_item.quantity = cart_item.product.inventory
-            
+
             cart_item.save()
             serializer.instance = cart_item
         except CartItem.DoesNotExist:
@@ -95,7 +96,7 @@ class CartItemDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         cart = get_or_create_cart(self.request)
-        return cart.items.all()
+        return cart.items.all()  # type: ignore
 
 
 @api_view(['POST'])
@@ -104,18 +105,18 @@ def merge_cart(request):
     """Merge session cart with user cart after login."""
     if not request.user.is_authenticated:
         return Response({'error': 'User must be authenticated.'}, status=status.HTTP_401_UNAUTHORIZED)
-    
+
     session_key = request.data.get('session_key')
     if not session_key:
         return Response({'message': 'No session cart to merge.'})
-    
+
     try:
         session_cart = Cart.objects.get(session_key=session_key)
         user_cart, created = Cart.objects.get_or_create(user=request.user)
-        
+
         # Merge items
         merged_count = 0
-        for session_item in session_cart.items.all():
+        for session_item in session_cart.items.all():  # type: ignore
             cart_item, item_created = CartItem.objects.get_or_create(
                 cart=user_cart,
                 product=session_item.product,
@@ -128,15 +129,15 @@ def merge_cart(request):
                     cart_item.quantity = cart_item.product.inventory
                 cart_item.save()
             merged_count += 1
-        
+
         # Delete session cart
         session_cart.delete()
-        
+
         return Response({
             'message': f'Merged {merged_count} items into cart.',
             'cart': CartSerializer(user_cart).data
         })
-        
+
     except Cart.DoesNotExist:
         return Response({'message': 'Session cart not found.'})
 
@@ -174,9 +175,9 @@ class OrderCreateView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         order = serializer.save()
-        
+
         # Create vendor earnings records
         vendor_totals = {}
         for item in order.items.all():
@@ -187,18 +188,18 @@ class OrderCreateView(generics.CreateAPIView):
                     'gross_amount': 0
                 }
             vendor_totals[vendor_id]['gross_amount'] += item.total_price
-        
+
         for vendor_data in vendor_totals.values():
             gross_amount = vendor_data['gross_amount']
-            platform_fee = gross_amount * 0.05  # 5% platform fee
-            
+            platform_fee = gross_amount * Decimal('0.05')  # 5% platform fee
+
             VendorEarnings.objects.create(
                 vendor=vendor_data['vendor'],
                 order=order,
                 gross_amount=gross_amount,
                 platform_fee=platform_fee
             )
-        
+
         return Response(
             OrderDetailSerializer(order).data,
             status=status.HTTP_201_CREATED
@@ -211,18 +212,18 @@ def cancel_order(request, order_id):
     """Cancel an order."""
     try:
         order = Order.objects.get(id=order_id, user=request.user)
-        
+
         if not order.can_be_cancelled:
             return Response(
                 {'error': 'Order cannot be cancelled in current status.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         reason = request.data.get('reason', 'Customer request')
         order.cancel(reason)
-        
+
         return Response({'message': 'Order cancelled successfully.'})
-        
+
     except Order.DoesNotExist:
         return Response(
             {'error': 'Order not found.'},
@@ -240,7 +241,7 @@ class VendorOrdersView(generics.ListAPIView):
         vendor_orders = Order.objects.filter(
             items__vendor=self.request.user
         ).distinct().select_related('user')
-        
+
         return vendor_orders
 
 
@@ -260,7 +261,7 @@ class VendorEarningsView(generics.ListAPIView):
 def vendor_earnings_summary(request):
     """Get vendor earnings summary."""
     earnings = VendorEarnings.objects.filter(vendor=request.user)
-    
+
     summary = earnings.aggregate(
         total_gross=Sum('gross_amount'),
         total_fees=Sum('platform_fee'),
@@ -270,74 +271,121 @@ def vendor_earnings_summary(request):
         paid_amount=Sum('net_amount', filter=Q(status='paid')),
         total_orders=Count('order', distinct=True)
     )
-    
+
     # Convert None to 0
     for key, value in summary.items():
         if value is None:
             summary[key] = 0
-    
+
     return Response(summary)
 
 
 @api_view(['POST'])
 @permission_classes([IsAdminOnly])
 def update_order_status(request, order_id):
-    """Update order status (Admin only)."""
+    """
+        Update order status(Admin only).
+
+    """
     try:
         order = Order.objects.get(id=order_id)
-        new_status = request.data.get('status')
-        tracking_number = request.data.get('tracking_number', '')
-        
-        if new_status not in dict(Order._meta.get_field('status').choices):
-            return Response(
-                {'error': 'Invalid status.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        old_status = order.status
-        order.status = new_status
-        
-        # Update timestamps based on status
-        if new_status == 'PAID' and old_status != 'PAID':
-            order.paid_at = timezone.now()
-            # Update vendor earnings to available
-            VendorEarnings.objects.filter(order=order).update(status='available')
-        
-        elif new_status == 'SHIPPED' and old_status != 'SHIPPED':
-            order.shipped_at = timezone.now()
-            if tracking_number:
-                order.tracking_number = tracking_number
-        
-        elif new_status == 'DELIVERED' and old_status != 'DELIVERED':
-            order.delivered_at = timezone.now()
-        
-        order.save()
-        
-        return Response({
-            'message': f'Order status updated to {new_status}.',
-            'order': OrderDetailSerializer(order).data
-        })
-        
     except Order.DoesNotExist:
         return Response(
             {'error': 'Order not found.'},
             status=status.HTTP_404_NOT_FOUND
         )
 
+    # Validate required fields
+    new_status = request.data.get('status')
+    if not new_status:
+        return Response(
+            {'error': 'Status field is required.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Validate status value
+    valid_statuses = [choice[0]
+                      for choice in Order._meta.get_field('status').choices]
+    if new_status not in valid_statuses:
+        return Response(
+            {'error': f'Invalid status. Valid options are: {", ".join(valid_statuses)}'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    tracking_number = request.data.get('tracking_number', '')
+
+    # Prevent status regression
+    old_status = order.status
+    if new_status == old_status:
+        return Response(
+            {'warning': f'Order status is already {new_status}.'},
+            status=status.HTTP_200_OK
+        )
+
+    # Update order with transaction to ensure data consistency
+    try:
+        with transaction.atomic():
+            order.status = new_status
+
+            # Update timestamps based on status transitions
+            if new_status == 'PAID' and old_status != 'PAID':
+                order.paid_at = timezone.now()
+                # Update vendor earnings to available
+                VendorEarnings.objects.filter(
+                    order=order).update(status='available')
+
+            elif new_status == 'SHIPPED' and old_status != 'SHIPPED':
+                order.shipped_at = timezone.now()
+                if tracking_number:
+                    order.tracking_number = tracking_number
+                # Optional: Validate tracking number format if needed
+                # if tracking_number and not is_valid_tracking_number(tracking_number):
+                #     return Response(
+                #         {'error': 'Invalid tracking number format.'},
+                #         status=status.HTTP_400_BAD_REQUEST
+                #     )
+
+            elif new_status == 'DELIVERED' and old_status != 'DELIVERED':
+                order.delivered_at = timezone.now()
+                # Ensure order was shipped before being delivered
+                if not order.shipped_at:
+                    order.shipped_at = timezone.now()  # or return an error
+
+            order.save()
+
+            # Optional: Add status change history/log
+            # OrderStatusHistory.objects.create(
+            #     order=order,
+            #     old_status=old_status,
+            #     new_status=new_status,
+            #     changed_by=request.user
+            # )
+
+        return Response({
+            'message': f'Order status updated from {old_status} to {new_status}.',
+            'order': OrderDetailSerializer(order).data
+        })
+
+    except Exception as e:
+        return Response(
+            {'error': f'Failed to update order status: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 
 @api_view(['GET'])
 @permission_classes([IsAdminOnly])
 def order_analytics(request):
-    """Get order analytics (Admin only)."""
+    """Get order analytics(Admin only)."""
     from django.utils import timezone
     from datetime import timedelta
-    
+
     # Get date range
     days = int(request.GET.get('days', 30))
     start_date = timezone.now() - timedelta(days=days)
-    
+
     orders = Order.objects.filter(created_at__gte=start_date)
-    
+
     analytics = {
         'total_orders': orders.count(),
         'total_revenue': orders.aggregate(Sum('total_amount'))['total_amount__sum'] or 0,
@@ -346,16 +394,17 @@ def order_analytics(request):
         'daily_orders': [],
         'top_products': []
     }
-    
+
     if analytics['total_orders'] > 0:
-        analytics['average_order_value'] = analytics['total_revenue'] / analytics['total_orders']
-    
+        analytics['average_order_value'] = analytics['total_revenue'] / \
+            analytics['total_orders']
+
     # Status breakdown
     from django.db.models import Count
     status_data = orders.values('status').annotate(count=Count('id'))
     for item in status_data:
         analytics['status_breakdown'][item['status']] = item['count']
-    
+
     # Daily orders for the last 7 days
     for i in range(7):
         date = timezone.now().date() - timedelta(days=i)
@@ -364,7 +413,7 @@ def order_analytics(request):
             'date': date.isoformat(),
             'count': daily_count
         })
-    
+
     # Top selling products
     top_products = OrderItem.objects.filter(
         order__created_at__gte=start_date
@@ -372,7 +421,7 @@ def order_analytics(request):
         total_quantity=Sum('quantity'),
         total_revenue=Sum('total_price')
     ).order_by('-total_quantity')[:10]
-    
+
     analytics['top_products'] = list(top_products)
-    
+
     return Response(analytics)
