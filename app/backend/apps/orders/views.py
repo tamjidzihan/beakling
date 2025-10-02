@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from django.db import transaction
 from django.db.models import Sum, Count, Q
 from django.utils import timezone
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiTypes, OpenApiExample
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter,  OpenApiExample
+from drf_spectacular.types import OpenApiTypes
 from apps.common.permissions import IsAdminOnly, IsVendorOrReadOnly
 from apps.catalog.models import Product
 from .models import Cart, CartItem, Order, OrderItem, ShippingMethod, VendorEarnings
