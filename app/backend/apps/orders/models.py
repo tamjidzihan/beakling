@@ -114,11 +114,11 @@ class Order(BaseModel):
     # Totals
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     tax_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
+        max_digits=10, decimal_places=2, default=0)  # type: ignore
     shipping_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
+        max_digits=10, decimal_places=2, default=0)  # type: ignore
     discount_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
+        max_digits=10, decimal_places=2, default=0)  # type: ignore
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     # Addresses (stored as JSON to preserve historical data)
@@ -297,7 +297,7 @@ class VendorEarnings(BaseModel):
     )
     gross_amount = models.DecimalField(max_digits=10, decimal_places=2)
     platform_fee = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
+        max_digits=10, decimal_places=2, default=0)  # type: ignore
     net_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(
         max_length=20,

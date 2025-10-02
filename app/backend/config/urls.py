@@ -36,9 +36,9 @@ urlpatterns = [
 
     # API Routes
     path('api/auth/', include('apps.users.urls')),
-    path('api/', include('apps.catalog.urls')),
+    # path('api/', include('apps.catalog.urls')),
     path('api/', include('apps.orders.urls')),
-    path('api/', include('apps.music.urls')),
+    # path('api/', include('apps.music.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
